@@ -36,8 +36,8 @@ import os
 # wheel (0.29.0)
 #
 
-def printResults(all_results, num=3):
-    probs=all_results['probabilities']
+def printResults(all_results, num=3, key='probabilities'):
+    probs=all_results[key]
     i = 0
     for key, value in sorted(probs.iteritems(), reverse=True, key=lambda (k,v): (v,k)):
         if i > num-1:
@@ -72,7 +72,6 @@ def _scale(x):
     x *= 2.
     return x
 
-scale = 2.13/255
 coreml_model = coremltools.converters.keras.convert(model,
                                                     input_names=['image'],
                                                     output_names=['probabilities'],
@@ -80,13 +79,26 @@ coreml_model = coremltools.converters.keras.convert(model,
                                                     class_labels='classes.txt',
                                                     predicted_feature_name='class',
                                                     is_bgr=True,
-                                                    image_scale=scale)
-                                                    # red_bias=_scale(-123.68),
-                                                    # green_bias=_scale(-116.779),
-                                                    # blue_bias=_scale(-103.939))
+                                                    image_scale=(2./255))
+                                                    # red_bias=-1,
+                                                    # green_bias=-1,
+                                                    # blue_bias=-1)
 
-print("CoreML")
+print("CoreML Converted")
 print("Elephant Probabilities:")
 printResults(coreml_model.predict({'image': elephant_img}))
 print("Peacock Probabilities:")
 printResults(coreml_model.predict({'image': peacock_img}))
+
+# In order to test with Apple's InceptionV3, download it from here:
+# https://developer.apple.com/machine-learning/
+# and place it in the same folder as this app, then uncomment this code:
+
+# coreml_model = coremltools.models.MLModel('Inceptionv3.mlmodel')
+#
+# print("Apple InceptionV3:")
+# print("Elephant Probabilities:")
+# printResults(coreml_model.predict({'image': elephant_img}), key='classLabelProbs')
+# print("Peacock Probabilities:")
+# printResults(coreml_model.predict({'image': peacock_img}), key='classLabelProbs')
+
