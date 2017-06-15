@@ -72,7 +72,7 @@ def _scale(x):
     x *= 2.
     return x
 
-scale = 2./255
+scale = 2.13/255
 coreml_model = coremltools.converters.keras.convert(model,
                                                     input_names=['image'],
                                                     output_names=['probabilities'],
@@ -80,10 +80,10 @@ coreml_model = coremltools.converters.keras.convert(model,
                                                     class_labels='classes.txt',
                                                     predicted_feature_name='class',
                                                     is_bgr=True,
-                                                    image_scale=scale,
-                                                    red_bias=_scale(-123.68),
-                                                    green_bias=_scale(-116.779),
-                                                    blue_bias=_scale(-103.939))
+                                                    image_scale=scale)
+                                                    # red_bias=_scale(-123.68),
+                                                    # green_bias=_scale(-116.779),
+                                                    # blue_bias=_scale(-103.939))
 
 print("CoreML")
 print("Elephant Probabilities:")
