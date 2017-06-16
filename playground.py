@@ -66,11 +66,7 @@ print("KERAS")
 print('Elephant Probabilities:\n', decode_predictions(elephant_preds, top=3))
 print('Peacock Probabilities:\n', decode_predictions(peacock_preds, top=3))
 
-def _scale(x):
-    x /= 255.
-    x += 0.5
-    x *= 2.
-    return x
+scale = 2./255
 
 coreml_model = coremltools.converters.keras.convert(model,
                                                     input_names=['image'],
@@ -78,11 +74,12 @@ coreml_model = coremltools.converters.keras.convert(model,
                                                     image_input_names='image',
                                                     class_labels='classes.txt',
                                                     predicted_feature_name='class',
-                                                    is_bgr=True,
-                                                    image_scale=(2./255))
-                                                    # red_bias=-1,
-                                                    # green_bias=-1,
-                                                    # blue_bias=-1)
+                                                    # is_bgr=True,
+                                                    image_scale=scale,
+                                                    red_bias=-1,
+                                                    green_bias=-1,
+                                                    blue_bias=-1)
+
 
 print("CoreML Converted")
 print("Elephant Probabilities:")
@@ -95,6 +92,10 @@ printResults(coreml_model.predict({'image': peacock_img}))
 # and place it in the same folder as this app, then uncomment this code:
 
 # coreml_model = coremltools.models.MLModel('Inceptionv3.mlmodel')
+# print("#########IMPORTED SPEC#########")
+#
+# print(coreml_model.get_spec())
+
 #
 # print("Apple InceptionV3:")
 # print("Elephant Probabilities:")
